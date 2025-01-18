@@ -1,192 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital Resource Tracker</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="Style.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * { font-family: 'Space Grotesk', sans-serif; }
-        .neubrutalism {
-            border: 3px solid #000;
-            box-shadow: 5px 5px 0px #000;
-            transition: all 0.2s ease;
-        }
-        .neubrutalism:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 7px 7px 0px #000;
-        }
-        .loading { animation: pulse 1.5s infinite; }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        .modal { background-color: rgba(0, 0, 0, 0.5); }
-        .shake { animation: shake 0.5s; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-    </style>
 </head>
-<body class="bg-[#F4A0A0] min-h-screen p-4">
-    <div id="app" class="max-w-7xl mx-auto">
+
+<body>
+    <div id="app">
         <!-- Login Modal -->
-        <div v-if="showLoginModal" class="fixed inset-0 modal flex items-center justify-center p-4 z-50">
-            <div class="neubrutalism bg-white p-8 rounded-lg max-w-md w-full">
-                <h3 class="text-2xl font-bold mb-6 text-center">Admin Login</h3>
+        <div v-if="showLoginModal" class="modal">
+            <div class="modal-content">
+                <h3>Admin Login</h3>
                 <form @submit.prevent="handleLogin" :class="{ 'shake': loginError }">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block mb-2">Username</label>
-                            <input v-model="loginForm.username" type="text" class="neubrutalism w-full p-3 rounded" required>
-                        </div>
-                        <div>
-                            <label class="block mb-2">Password</label>
-                            <input v-model="loginForm.password" type="password" class="neubrutalism w-full p-3 rounded" required>
-                        </div>
-                        <p v-if="loginError" class="text-red-500 text-sm">Invalid credentials</p>
-                        <div class="flex justify-end gap-4">
-                            <button type="button" @click="showLoginModal = false" class="neubrutalism bg-gray-200 px-6 py-2 rounded">Cancel</button>
-                            <button type="submit" class="neubrutalism bg-[#FF69B4] px-6 py-2 rounded font-bold hover:bg-[#FF1493]">Login</button>
-                        </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input v-model="loginForm.username" type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input v-model="loginForm.password" type="password" id="password" required>
+                    </div>
+                    <p v-if="loginError" class="error">Invalid credentials</p>
+                    <div class="button-group">
+                        <button type="button" @click="showLoginModal = false" class="cancel-btn">Cancel</button>
+                        <button type="submit" class="login-btn">Login</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <header class="neubrutalism bg-white p-6 mb-8 rounded-lg">
-            <h1 class="text-3xl md:text-4xl font-bold text-center">Hospital Resource Tracker</h1>
-            <p class="text-center mt-2">Real-time availability dashboard</p>
-            <div class="flex justify-center mt-4">
-                <button @click="toggleAdminView" class="neubrutalism bg-[#FF69B4] px-6 py-2 rounded-lg font-bold hover:bg-[#FF1493]">
-                    {{ isAdmin ? 'Switch to Patient View' : 'Switch to Admin View' }}
-                </button>
-            </div>
+        <!-- Header -->
+        <header class="header">
+            <h1>Hospital Resources Tracker</h1>
+            <p>Real-time availability dashboard</p>
+            <button @click="toggleAdminView" class="toggle-view-btn">
+                {{ isAdmin ? 'Switch to Patient View' : 'Switch to Admin View' }}
+            </button>
         </header>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div v-for="stat in stats" :key="stat.title" class="neubrutalism bg-white p-6 rounded-lg">
-                <h3 class="text-xl font-bold mb-2">{{ stat.title }}</h3>
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-3xl font-bold">{{ stat.available }}/{{ stat.total }}</p>
-                        <p class="text-sm">Available</p>
-                    </div>
-                    <div v-if="isAdmin" class="space-x-2">
-                        <button @click="updateStat(stat, -1)" class="neubrutalism bg-red-200 px-3 py-1 rounded">-</button>
-                        <button @click="updateStat(stat, 1)" class="neubrutalism bg-green-200 px-3 py-1 rounded">+</button>
-                    </div>
+        <div class="grid">
+            <div v-for="stat in stats" :key="stat.title" class="stat-card">
+                <h3>{{ stat.title }}</h3>
+                <p>{{ stat.available }}/{{ stat.total }}</p>
+                <p>Available</p>
+                <div v-if="isAdmin" class="button-group">
+                    <button @click="updateStat(stat, -1)" class="decrement-btn">-</button>
+                    <button @click="updateStat(stat, 1)" class="increment-btn">+</button>
                 </div>
             </div>
         </div>
 
         <!-- Supplies Section -->
-        <div class="neubrutalism bg-white p-6 rounded-lg mb-8">
-            <h2 class="text-2xl font-bold mb-4">Medical Supplies</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div v-for="supply in supplies" :key="supply.name" class="neubrutalism bg-gray-50 p-4 rounded">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold">{{ supply.name }}</h4>
-                            <p :class="supply.status === 'Low' ? 'text-red-500' : 'text-green-500'">
-                                {{ supply.status }}
-                            </p>
-                        </div>
-                        <div v-if="isAdmin" class="space-x-2">
-                            <button @click="updateSupply(supply, 'Low')" class="neubrutalism bg-red-200 px-3 py-1 rounded">Low</button>
-                            <button @click="updateSupply(supply, 'Available')" class="neubrutalism bg-green-200 px-3 py-1 rounded">Available</button>
-                        </div>
+        <section class="supplies">
+            <h2>Medical Supplies</h2>
+            <div class="grid">
+                <div v-for="supply in supplies" :key="supply.name" class="supply-card">
+                    <h4>{{ supply.name }}</h4>
+                    <p :class="supply.status === 'Low' ? 'low' : 'available'">{{ supply.status }}</p>
+                    <div v-if="isAdmin" class="button-group">
+                        <button @click="updateSupply(supply, 'Low')" class="low-btn">Low</button>
+                        <button @click="updateSupply(supply, 'Available')" class="available-btn">Available</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Last Updated -->
-        <div class="text-center text-sm">
+        <footer class="footer">
             Last updated: {{ lastUpdated }}
-        </div>
+        </footer>
     </div>
 
-    <script>
-        const { createApp } = Vue
-
-        createApp({
-            data() {
-                return {
-                    isAdmin: false,
-                    showLoginModal: false,
-                    loginForm: {
-                        username: '',
-                        password: ''
-                    },
-                    loginError: false,
-                    adminCredentials: {
-                        username: 'admin',
-                        password: 'admin123'
-                    },
-                    stats: [
-                        { title: 'Doctors', available: 15, total: 20 },
-                        { title: 'Nurses', available: 25, total: 30 },
-                        { title: 'Emergency Rooms', available: 8, total: 10 },
-                        { title: 'ICU Rooms', available: 5, total: 8 },
-                        { title: 'Operation Theaters', available: 3, total: 5 },
-                        { title: 'General Wards', available: 40, total: 50 }
-                    ],
-                    supplies: [
-                        { name: 'Oxygen Cylinders', status: 'Available' },
-                        { name: 'Blood Units', status: 'Low' },
-                        { name: 'Ventilators', status: 'Available' },
-                        { name: 'PPE Kits', status: 'Available' },
-                        { name: 'Medical Masks', status: 'Low' },
-                        { name: 'Surgical Equipment', status: 'Available' }
-                    ],
-                    lastUpdated: new Date().toLocaleString()
-                }
-            },
-            methods: {
-                toggleAdminView() {
-                    if (this.isAdmin) {
-                        this.isAdmin = false;
-                    } else {
-                        this.showLoginModal = true;
-                    }
-                },
-                handleLogin() {
-                    if (this.loginForm.username === this.adminCredentials.username && 
-                        this.loginForm.password === this.adminCredentials.password) {
-                        this.isAdmin = true;
-                        this.showLoginModal = false;
-                        this.loginError = false;
-                        this.loginForm.username = '';
-                        this.loginForm.password = '';
-                    } else {
-                        this.loginError = true;
-                        setTimeout(() => {
-                            this.loginError = false;
-                        }, 3000);
-                    }
-                },
-                updateStat(stat, change) {
-                    if ((change > 0 && stat.available < stat.total) || 
-                        (change < 0 && stat.available > 0)) {
-                        stat.available += change;
-                        this.lastUpdated = new Date().toLocaleString();
-                    }
-                },
-                updateSupply(supply, status) {
-                    supply.status = status;
-                    this.lastUpdated = new Date().toLocaleString();
-                }
-            }
-        }).mount('#app')
-    </script>
+    <script src="Brain.js"></script>
 </body>
+
 </html>
