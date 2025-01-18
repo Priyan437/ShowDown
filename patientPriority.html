@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Medical Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Neubrutalism Theme */
+        .neu-shadow { box-shadow: 5px 5px 0px #000; }
+        .neu-border { border: 3px solid #000; }
+        .neu-button {
+            background: #FF6B6B;
+            border: 3px solid #000;
+            box-shadow: 5px 5px 0px #000;
+            transition: all 0.2s ease;
+        }
+        .neu-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0px #000;
+        }
+        .neu-input {
+            border: 3px solid #000;
+            background: #fff;
+            box-shadow: 3px 3px 0px #000;
+        }
+        .neu-table th, .neu-table td {
+            border: 2px solid #000;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body class="bg-[#FFE4E1] min-h-screen p-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="bg-[#FF6B6B] neu-border neu-shadow p-4 mb-8 rounded-lg">
+            <h1 class="text-2xl md:text-3xl font-bold">Patient Priortising System</h1>
+        </header>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Patient Form -->
+            <div class="bg-white neu-border neu-shadow p-6 rounded-lg">
+                <h2 class="text-xl font-bold mb-4">Add Emergency Patient</h2>
+                <form id="patientForm" class="space-y-4">
+                    <div>
+                        <label class="block font-bold mb-2">Name</label>
+                        <input type="text" required class="w-full neu-input p-2 rounded">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-2">Age</label>
+                        <input type="number" required class="w-full neu-input p-2 rounded">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-2">Symptoms</label>
+                        <textarea required class="w-full neu-input p-2 rounded" rows="3"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-2">Triage Level</label>
+                        <select required class="w-full neu-input p-2 rounded">
+                            <option value="1">Level 1 - Critical</option>
+                            <option value="2">Level 2 - Emergency</option>
+                            <option value="3">Level 3 - Urgent</option>
+                            <option value="4">Level 4 - Semi-urgent</option>
+                            <option value="5">Level 5 - Non-urgent</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="neu-button px-6 py-2 rounded text-white font-bold w-full">
+                        Add Patient
+                    </button>
+                </form>
+            </div>
+
+            <!-- Patient List -->
+            <div class="bg-white neu-border neu-shadow p-6 rounded-lg">
+                <h2 class="text-xl font-bold mb-4">Current Patients</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full neu-table">
+                        <thead>
+                            <tr class="bg-[#FFE4E1]">
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Triage Level</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resource Tracker -->
+        <!-- <div class="mt-8 bg-white neu-border neu-shadow p-6 rounded-lg">
+            <h2 class="text-xl font-bold mb-4">Resource Availability</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div id="bedStatus" class="bg-[#90EE90] neu-border p-4 rounded">
+                    <h3 class="font-bold">Available Beds</h3>
+                    <p class="text-2xl font-bold">5</p>
+                </div>
+                <div id="doctorStatus" class="bg-[#90EE90] neu-border p-4 rounded">
+                    <h3 class="font-bold">Doctors On Duty</h3>
+                    <p class="text-2xl font-bold">3</p>
+                </div>
+                <div id="nurseStatus" class="bg-[#90EE90] neu-border p-4 rounded">
+                    <h3 class="font-bold">Nurses Available</h3>
+                    <p class="text-2xl font-bold">8</p>
+                </div>
+                <div id="ventilatorStatus" class="bg-[#FFB6C1] neu-border p-4 rounded">
+                    <h3 class="font-bold">Ventilators Free</h3>
+                    <p class="text-2xl font-bold">1</p>
+                </div>
+            </div>
+        </div> -->
+    </div>
+
+    <script>
+        // Sample data structure for patients
+        let patients = [];
+
+        document.getElementById('patientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const patient = {
+                name: e.target.elements[0].value,
+                age: e.target.elements[1].value,
+                symptoms: e.target.elements[2].value,
+                triageLevel: e.target.elements[3].value,
+                status: "Waiting"
+            };
+            
+            patients.push(patient);
+            updatePatientList();
+            e.target.reset();
+        });
+
+        function updatePatientList() {
+            const patientList = document.getElementById('patientList');
+            patients.sort((a, b) => a.triageLevel - b.triageLevel);
+            
+            patientList.innerHTML = patients.map(patient => `
+                <tr>
+                    <td>${patient.name}</td>
+                    <td>${patient.age}</td>
+                    <td>Level ${patient.triageLevel}</td>
+                    <td>${patient.status}</td>
+                </tr>
+            `).join('');
+        }
+
+        // // Resource status updates
+        // function updateResourceStatus() {
+        //     const beds = parseInt(document.querySelector('#bedStatus p').textContent);
+        //     if (beds < 3) {
+        //         document.getElementById('bedStatus').classList.remove('bg-[#90EE90]');
+        //         document.getElementById('bedStatus').classList.add('bg-[#FFB6C1]');
+        //     }
+        // }
+
+        // updateResourceStatus();
+    </script>
+</body>
+</html>
