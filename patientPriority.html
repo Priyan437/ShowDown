@@ -52,17 +52,27 @@
                         <input type="number" required class="w-full neu-input p-2 rounded">
                     </div>
                     <div>
+                        <label class="block font-bold mb-2">Emergency Type</label>
+                        <select required class="w-full neu-input p-2 rounded">
+                            <option value="">Select Emergency Type</option>
+                            <option value="cardiac">Cardiac Emergency</option>
+                            <option value="respiratory">Respiratory Problem</option>
+                            <option value="injury">Physical Injury</option>
+                            <option value="other">Other Medical Emergency</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block font-bold mb-2">Symptoms</label>
                         <textarea required class="w-full neu-input p-2 rounded" rows="3"></textarea>
                     </div>
                     <div>
-                        <label class="block font-bold mb-2">Triage Level</label>
+                        <label class="block font-bold mb-2">Emergency Level</label>
                         <select required class="w-full neu-input p-2 rounded">
-                            <option value="1">Level 1 - Critical</option>
-                            <option value="2">Level 2 - Emergency</option>
-                            <option value="3">Level 3 - Urgent</option>
-                            <option value="4">Level 4 - Semi-urgent</option>
-                            <option value="5">Level 5 - Non-urgent</option>
+                            <option value="1">Critical - Immediate Attention Required</option>
+                            <option value="2">Severe - Very Urgent</option>
+                            <option value="3">Moderate - Urgent</option>
+                            <option value="4">Mild - Standard Care</option>
+                            <option value="5">Minor - Non-urgent</option>
                         </select>
                     </div>
                     <button type="submit" class="neu-button px-6 py-2 rounded text-white font-bold w-full">
